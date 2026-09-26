@@ -1,0 +1,167 @@
+<app-navbar></app-navbar>
+<div class="pagina-nueva">
+  <!-- ====================================== -->
+  <!-- ENCABEZADO -->
+  <!-- ====================================== -->
+
+  <header class="header">
+    <div>
+      <h1>Nueva incidencia</h1>
+
+      <p>Registra una incidencia relacionada con el servicio de energía eléctrica.</p>
+    </div>
+
+    <button type="button" class="btn-volver" (click)="cancelar()">Volver al Dashboard</button>
+  </header>
+
+  <!-- ====================================== -->
+  <!-- ERROR -->
+  <!-- ====================================== -->
+
+  <div *ngIf="mensajeError" class="mensaje error">
+    {{ mensajeError }}
+  </div>
+
+  <!-- ====================================== -->
+  <!-- ÉXITO -->
+  <!-- ====================================== -->
+
+  <div *ngIf="mensajeExito" class="mensaje exito">
+    {{ mensajeExito }}
+  </div>
+
+  <!-- ====================================== -->
+  <!-- FORMULARIO -->
+  <!-- ====================================== -->
+
+  <section class="formulario-card">
+    <div class="formulario-header">
+      <h2>Datos de la incidencia</h2>
+
+      <p>Complete la información necesaria para registrar la solicitud.</p>
+    </div>
+
+    <form (ngSubmit)="registrar()">
+      <!-- TÍTULO -->
+
+      <div class="campo campo-completo">
+        <label for="titulo">
+          Título
+          <span>*</span>
+        </label>
+
+        <input
+          id="titulo"
+          name="titulo"
+          type="text"
+          maxlength="150"
+          [(ngModel)]="titulo"
+          [disabled]="procesando"
+          placeholder="Ej. Corte de energía en domicilio"
+        />
+      </div>
+
+      <div class="form-grid">
+        <!-- TIPO -->
+
+        <div class="campo">
+          <label for="tipo">
+            Tipo de incidencia
+            <span>*</span>
+          </label>
+
+          <select
+            id="tipo"
+            name="tipo"
+            [(ngModel)]="tipoIncidenciaId"
+            [disabled]="procesando || cargandoTipos"
+          >
+            <option [ngValue]="null">
+              {{ cargandoTipos ? 'Cargando tipos...' : 'Seleccione un tipo' }}
+            </option>
+
+            <option *ngFor="let tipo of tiposIncidencia" [ngValue]="tipo.id">
+              {{ tipo.nombre }}
+            </option>
+          </select>
+        </div>
+
+        <!-- PRIORIDAD -->
+
+        <div class="campo">
+          <label for="prioridad">
+            Prioridad
+            <span>*</span>
+          </label>
+
+          <select id="prioridad" name="prioridad" [(ngModel)]="prioridad" [disabled]="procesando">
+            <option value="BAJA">Baja</option>
+
+            <option value="MEDIA">Media</option>
+
+            <option value="ALTA">Alta</option>
+
+            <option value="CRITICA">Crítica</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- UBICACIÓN -->
+
+      <div class="campo campo-completo">
+        <label for="ubicacion">
+          Ubicación
+          <span>*</span>
+        </label>
+
+        <input
+          id="ubicacion"
+          name="ubicacion"
+          type="text"
+          maxlength="255"
+          [(ngModel)]="ubicacion"
+          [disabled]="procesando"
+          placeholder="Ej. Chorrillos, Lima"
+        />
+      </div>
+
+      <!-- DESCRIPCIÓN -->
+
+      <div class="campo campo-completo">
+        <label for="descripcion">
+          Descripción
+          <span>*</span>
+        </label>
+
+        <textarea
+          id="descripcion"
+          name="descripcion"
+          rows="7"
+          [(ngModel)]="descripcion"
+          [disabled]="procesando"
+          placeholder="Describa el problema con el mayor detalle posible."
+        >
+        </textarea>
+
+        <small>
+          Indique qué ocurrió, desde cuándo presenta el problema y cualquier información que pueda
+          ayudar a identificar la incidencia.
+        </small>
+      </div>
+
+      <!-- ================================== -->
+      <!-- BOTONES -->
+      <!-- ================================== -->
+
+      <div class="acciones">
+        <button type="button" class="btn-cancelar" [disabled]="procesando" (click)="cancelar()">
+          Cancelar
+        </button>
+
+        <button type="submit" class="btn-registrar" [disabled]="procesando || cargandoTipos">
+          {{ procesando ? 'Registrando...' : 'Registrar incidencia' }}
+        </button>
+      </div>
+    </form>
+  </section>
+</div>

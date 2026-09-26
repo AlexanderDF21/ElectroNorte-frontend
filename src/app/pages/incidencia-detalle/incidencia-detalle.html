@@ -1,0 +1,395 @@
+<app-navbar></app-navbar>
+<div class="pagina-detalle">
+  <!-- ====================================== -->
+  <!-- ENCABEZADO -->
+  <!-- ====================================== -->
+
+  <header class="header">
+    <div>
+      <h1>Detalle de Incidencia</h1>
+
+      <p *ngIf="incidencia">
+        {{ incidencia.codigo }}
+      </p>
+    </div>
+
+    <button class="btn-volver" (click)="volver()">Volver a incidencias</button>
+  </header>
+
+  <!-- ====================================== -->
+  <!-- CARGANDO -->
+  <!-- ====================================== -->
+
+  <div *ngIf="cargando" class="mensaje">Cargando incidencia...</div>
+
+  <!-- ====================================== -->
+  <!-- ERROR -->
+  <!-- ====================================== -->
+
+  <div *ngIf="mensajeError" class="error">
+    {{ mensajeError }}
+  </div>
+
+  <!-- ====================================== -->
+  <!-- ÉXITO -->
+  <!-- ====================================== -->
+
+  <div *ngIf="mensajeExito" class="exito">
+    {{ mensajeExito }}
+  </div>
+
+  <!-- ====================================== -->
+  <!-- CONTENIDO -->
+  <!-- ====================================== -->
+
+  <div *ngIf="incidencia" class="contenido">
+    <!-- ====================================== -->
+    <!-- ADMIN - REGISTRADA -->
+    <!-- ====================================== -->
+
+    <section *ngIf="esAdmin() && incidencia.estado === 'REGISTRADA'" class="tarjeta acciones-admin">
+      <h2>Gestión de la incidencia</h2>
+
+      <p>Esta incidencia todavía no ha sido revisada.</p>
+
+      <button class="btn-revision" [disabled]="procesando" (click)="pasarARevision()">
+        {{ procesando ? 'Procesando...' : 'Pasar a revisión' }}
+      </button>
+    </section>
+
+    <!-- ====================================== -->
+    <!-- ADMIN - EN REVISIÓN -->
+    <!-- ====================================== -->
+
+    <section
+      *ngIf="esAdmin() && incidencia.estado === 'EN_REVISION'"
+      class="tarjeta acciones-admin"
+    >
+      <h2>Asignar técnico</h2>
+
+      <p>Seleccione el técnico responsable de atender esta incidencia.</p>
+
+      <div class="asignacion-form">
+        <label for="tecnico"> Técnico disponible </label>
+
+        <select id="tecnico" [(ngModel)]="tecnicoSeleccionado" [disabled]="procesando">
+          <option [ngValue]="null">Seleccione un técnico</option>
+
+          <option *ngFor="let tecnico of tecnicos" [ngValue]="tecnico.id">
+            {{ tecnico.nombre }}
+            - {{ tecnico.email }}
+          </option>
+        </select>
+
+        <button
+          class="btn-asignar"
+          [disabled]="procesando || !tecnicoSeleccionado"
+          (click)="asignarTecnico()"
+        >
+          {{ procesando ? 'Asignando...' : 'Asignar técnico' }}
+        </button>
+      </div>
+
+      <p *ngIf="tecnicos.length === 0" class="sin-datos">
+        No existen técnicos activos disponibles.
+      </p>
+    </section>
+
+    <!-- ====================================== -->
+    <!-- TÉCNICO - ASIGNADA -->
+    <!-- ====================================== -->
+
+    <section *ngIf="esTecnico() && incidencia.estado === 'ASIGNADA'" class="tarjeta acciones-admin">
+      <h2>Atención técnica</h2>
+
+      <p>
+        La incidencia se encuentra asignada. Inicie la atención para comenzar con el trabajo
+        técnico.
+      </p>
+
+      <button class="btn-revision" [disabled]="procesando" (click)="iniciarAtencion()">
+        {{ procesando ? 'Procesando...' : 'Iniciar atención' }}
+      </button>
+    </section>
+
+    <!-- ====================================== -->
+    <!-- TÉCNICO - EN ATENCIÓN -->
+    <!-- ====================================== -->
+
+    <section
+      *ngIf="esTecnico() && incidencia.estado === 'EN_ATENCION'"
+      class="tarjeta acciones-admin"
+    >
+      <h2>Gestión técnica</h2>
+
+      <p>Registre las acciones realizadas durante la atención de la incidencia.</p>
+
+      <!-- REGISTRAR ACCIÓN -->
+
+      <div class="form-accion">
+        <label for="descripcionAccion"> Acción realizada </label>
+
+        <textarea
+          id="descripcionAccion"
+          [(ngModel)]="descripcionAccion"
+          [disabled]="procesando"
+          rows="4"
+          maxlength="1000"
+          placeholder="Ejemplo: Se verificó el tablero eléctrico y se identificó una falla en el suministro."
+        >
+        </textarea>
+
+        <div class="botones-tecnico">
+          <button
+            class="btn-asignar"
+            [disabled]="procesando || !descripcionAccion.trim()"
+            (click)="registrarAccion()"
+          >
+            {{ procesando ? 'Procesando...' : 'Registrar acción' }}
+          </button>
+
+          <button class="btn-resolver" [disabled]="procesando" (click)="resolverIncidencia()">
+            {{ procesando ? 'Procesando...' : 'Marcar como resuelta' }}
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====================================== -->
+    <!-- ADMIN - RESUELTA -->
+    <!-- ====================================== -->
+
+    <section *ngIf="esAdmin() && incidencia.estado === 'RESUELTA'" class="tarjeta acciones-admin">
+      <h2>Cierre de incidencia</h2>
+
+      <p>
+        El técnico ha marcado la incidencia como resuelta. Verifique la información registrada antes
+        de realizar el cierre.
+      </p>
+
+      <button class="btn-cerrar" [disabled]="procesando" (click)="cerrarIncidencia()">
+        {{ procesando ? 'Procesando...' : 'Cerrar incidencia' }}
+      </button>
+    </section>
+
+    <!-- ====================================== -->
+    <!-- INFORMACIÓN PRINCIPAL -->
+    <!-- ====================================== -->
+
+    <section class="tarjeta">
+      <div class="titulo-incidencia">
+        <div>
+          <span class="codigo">
+            {{ incidencia.codigo }}
+          </span>
+
+          <h2>
+            {{ incidencia.titulo }}
+          </h2>
+        </div>
+
+        <span class="estado" [ngClass]="'estado-' + incidencia.estado.toLowerCase()">
+          {{ incidencia.estado }}
+        </span>
+      </div>
+
+      <div class="datos-grid">
+        <div class="dato">
+          <span class="etiqueta"> Prioridad </span>
+
+          <strong>
+            {{ incidencia.prioridad }}
+          </strong>
+        </div>
+
+        <div class="dato">
+          <span class="etiqueta"> Tipo de incidencia </span>
+
+          <strong>
+            {{ incidencia.tipoIncidenciaNombre || 'Sin información' }}
+          </strong>
+        </div>
+
+        <div class="dato">
+          <span class="etiqueta"> Solicitante </span>
+
+          <strong>
+            {{ incidencia.usuarioNombre || 'Sin información' }}
+          </strong>
+        </div>
+
+        <div class="dato">
+          <span class="etiqueta"> Técnico asignado </span>
+
+          <strong>
+            {{ incidencia.tecnicoNombre || 'Sin asignar' }}
+          </strong>
+        </div>
+
+        <div class="dato">
+          <span class="etiqueta"> Fecha de registro </span>
+
+          <strong>
+            {{ incidencia.fechaRegistro | date: 'dd/MM/yyyy HH:mm' }}
+          </strong>
+        </div>
+
+        <div class="dato">
+          <span class="etiqueta"> Ubicación </span>
+
+          <strong>
+            {{ incidencia.ubicacion || 'Sin información' }}
+          </strong>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====================================== -->
+    <!-- DESCRIPCIÓN -->
+    <!-- ====================================== -->
+
+    <section class="tarjeta">
+      <h2>Descripción</h2>
+
+      <p class="descripcion">
+        {{ incidencia.descripcion }}
+      </p>
+    </section>
+
+    <!-- ====================================== -->
+    <!-- SEGUIMIENTO -->
+    <!-- ====================================== -->
+
+    <section class="tarjeta">
+      <h2>Seguimiento</h2>
+
+      <div class="datos-grid">
+        <div class="dato">
+          <span class="etiqueta"> Fecha de asignación </span>
+
+          <strong>
+            {{
+              incidencia.fechaAsignacion
+                ? (incidencia.fechaAsignacion | date: 'dd/MM/yyyy HH:mm')
+                : 'Pendiente'
+            }}
+          </strong>
+        </div>
+
+        <div class="dato">
+          <span class="etiqueta"> Inicio de atención </span>
+
+          <strong>
+            {{
+              incidencia.fechaInicioAtencion
+                ? (incidencia.fechaInicioAtencion | date: 'dd/MM/yyyy HH:mm')
+                : 'Pendiente'
+            }}
+          </strong>
+        </div>
+
+        <div class="dato">
+          <span class="etiqueta"> Fecha de resolución </span>
+
+          <strong>
+            {{
+              incidencia.fechaResolucion
+                ? (incidencia.fechaResolucion | date: 'dd/MM/yyyy HH:mm')
+                : 'Pendiente'
+            }}
+          </strong>
+        </div>
+
+        <div class="dato">
+          <span class="etiqueta"> Fecha de cierre </span>
+
+          <strong>
+            {{
+              incidencia.fechaCierre
+                ? (incidencia.fechaCierre | date: 'dd/MM/yyyy HH:mm')
+                : 'Pendiente'
+            }}
+          </strong>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====================================== -->
+    <!-- HISTORIAL -->
+    <!-- ====================================== -->
+
+    <section class="tarjeta">
+      <h2>Historial de la incidencia</h2>
+
+      <div *ngIf="historial.length > 0" class="historial">
+        <div *ngFor="let item of historial" class="historial-item">
+          <div class="historial-fecha">
+            {{ item.fecha | date: 'dd/MM/yyyy HH:mm' }}
+          </div>
+
+          <div class="historial-contenido">
+            <strong *ngIf="item.tipoCambio">
+              {{ item.tipoCambio }}
+            </strong>
+
+            <p *ngIf="item.estadoAnterior && item.estadoNuevo">
+              Estado:
+
+              <strong>
+                {{ item.estadoAnterior }}
+              </strong>
+
+              →
+
+              <strong>
+                {{ item.estadoNuevo }}
+              </strong>
+            </p>
+
+            <p *ngIf="item.comentario">
+              {{ item.comentario }}
+            </p>
+
+            <small *ngIf="item.usuarioNombre">
+              Realizado por:
+              {{ item.usuarioNombre }}
+            </small>
+          </div>
+        </div>
+      </div>
+
+      <p *ngIf="historial.length === 0" class="sin-datos">No existen movimientos registrados.</p>
+    </section>
+
+    <!-- ====================================== -->
+    <!-- ACCIONES REALIZADAS -->
+    <!-- ====================================== -->
+
+    <section class="tarjeta">
+      <h2>Acciones realizadas</h2>
+
+      <div *ngIf="acciones.length > 0" class="acciones">
+        <div *ngFor="let accion of acciones" class="accion-item">
+          <div>
+            <strong>
+              {{ accion.descripcion }}
+            </strong>
+
+            <p *ngIf="accion.tecnicoNombre">
+              Técnico:
+              {{ accion.tecnicoNombre }}
+            </p>
+          </div>
+
+          <span class="accion-fecha">
+            {{ accion.fecha | date: 'dd/MM/yyyy HH:mm' }}
+          </span>
+        </div>
+      </div>
+
+      <p *ngIf="acciones.length === 0" class="sin-datos">
+        No existen acciones registradas para esta incidencia.
+      </p>
+    </section>
+  </div>
+</div>

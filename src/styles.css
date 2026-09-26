@@ -1,0 +1,25 @@
+/* =========================================
+   ESTILOS GLOBALES - ELECTRONORTE S.A.
+========================================= */
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+
+  font-family: Arial, Helvetica, sans-serif;
+
+  color: #101828;
+  background: #f4f6f8;
+}
+
+button,
+input,
+select,
+textarea {
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+a {
+  font-family: Arial, Helvetica, sans-serif;
+} /* You can add global styles to this file, and also import other style files */

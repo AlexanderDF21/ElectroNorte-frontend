@@ -1,0 +1,118 @@
+<app-navbar></app-navbar>
+<div class="pagina-incidencias">
+  <header class="header">
+    <div>
+      <h1>Gestión de Incidencias</h1>
+
+      <p>Consulta y administra las incidencias registradas.</p>
+    </div>
+
+    <button class="btn-volver" (click)="volverDashboard()">Volver al Dashboard</button>
+  </header>
+
+  <!-- CARGANDO -->
+
+  <div *ngIf="cargando" class="mensaje">Cargando incidencias...</div>
+
+  <!-- ERROR -->
+
+  <div *ngIf="mensajeError" class="error">
+    {{ mensajeError }}
+  </div>
+
+  <!-- TABLA DE INCIDENCIAS -->
+
+  <section class="tabla-contenedor" *ngIf="!cargando && !mensajeError">
+    <div class="tabla-header">
+      <h2>Incidencias registradas</h2>
+
+      <span class="contador"> Total: {{ incidencias.length }} </span>
+    </div>
+
+    <div class="tabla-responsive">
+      <table>
+        <thead>
+          <tr>
+            <th>Código</th>
+            <th>Título</th>
+            <th>Tipo</th>
+            <th>Prioridad</th>
+            <th>Estado</th>
+            <th>Solicitante</th>
+            <th>Técnico</th>
+            <th>Fecha</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr *ngFor="let incidencia of incidencias">
+            <!-- CÓDIGO -->
+
+            <td>
+              <strong>
+                {{ incidencia.codigo }}
+              </strong>
+            </td>
+
+            <!-- TÍTULO -->
+
+            <td>
+              {{ incidencia.titulo }}
+            </td>
+
+            <!-- TIPO -->
+
+            <td>
+              {{ incidencia.tipoIncidenciaNombre || 'Sin tipo' }}
+            </td>
+
+            <!-- PRIORIDAD -->
+
+            <td>
+              <span class="badge" [ngClass]="'prioridad-' + incidencia.prioridad.toLowerCase()">
+                {{ incidencia.prioridad }}
+              </span>
+            </td>
+
+            <!-- ESTADO -->
+
+            <td>
+              <span class="badge" [ngClass]="'estado-' + incidencia.estado.toLowerCase()">
+                {{ incidencia.estado }}
+              </span>
+            </td>
+
+            <!-- SOLICITANTE -->
+
+            <td>
+              {{ incidencia.usuarioNombre || 'Sin información' }}
+            </td>
+
+            <!-- TÉCNICO -->
+
+            <td>
+              {{ incidencia.tecnicoNombre || 'Sin asignar' }}
+            </td>
+
+            <!-- FECHA -->
+
+            <td>
+              {{ incidencia.fechaRegistro | date: 'dd/MM/yyyy HH:mm' }}
+            </td>
+
+            <!-- ACCIONES -->
+
+            <td>
+              <button class="btn-detalle" (click)="verDetalle(incidencia.id)">Ver detalle</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- SIN INCIDENCIAS -->
+
+    <p *ngIf="incidencias.length === 0" class="sin-datos">No existen incidencias registradas.</p>
+  </section>
+</div>

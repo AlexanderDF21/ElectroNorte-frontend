@@ -1,0 +1,70 @@
+<nav class="navbar">
+  <div class="navbar-contenido">
+    <!-- LOGO -->
+
+    <a routerLink="/dashboard" class="marca">
+      <div class="marca-icono">EN</div>
+
+      <div>
+        <strong> ElectroNorte S.A. </strong>
+
+        <span> Energía Eléctrica </span>
+      </div>
+    </a>
+
+    <!-- NAVEGACIÓN -->
+
+    <div class="menu">
+      <a
+        routerLink="/dashboard"
+        routerLinkActive="activo"
+        [routerLinkActiveOptions]="{ exact: true }"
+      >
+        Dashboard
+      </a>
+
+      <a
+        routerLink="/incidencias"
+        routerLinkActive="activo"
+        [routerLinkActiveOptions]="{ exact: true }"
+      >
+        {{ esUsuario() ? 'Mis incidencias' : 'Incidencias' }}
+      </a>
+
+      <!-- USUARIO -->
+
+      <a
+        *ngIf="esUsuario()"
+        routerLink="/incidencias/nueva"
+        routerLinkActive="activo"
+        [routerLinkActiveOptions]="{ exact: true }"
+      >
+        Nueva incidencia
+      </a>
+
+      <!-- ADMIN -->
+
+      <a *ngIf="esAdmin()" routerLink="/usuarios" routerLinkActive="activo"> Usuarios </a>
+
+      <a *ngIf="esAdmin()" routerLink="/tipos-incidencia" routerLinkActive="activo">
+        Tipos de incidencia
+      </a>
+    </div>
+
+    <!-- USUARIO CONECTADO -->
+
+    <div class="sesion">
+      <div class="usuario">
+        <strong>
+          {{ nombre }}
+        </strong>
+
+        <span class="rol">
+          {{ rol }}
+        </span>
+      </div>
+
+      <button type="button" class="btn-salir" (click)="cerrarSesion()">Cerrar sesión</button>
+    </div>
+  </div>
+</nav>

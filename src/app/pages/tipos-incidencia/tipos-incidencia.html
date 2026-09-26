@@ -1,0 +1,182 @@
+<app-navbar></app-navbar>
+<div class="pagina">
+  <header class="header">
+    <div>
+      <h1>Tipos de incidencia</h1>
+
+      <p>Administra las categorías utilizadas para clasificar las incidencias.</p>
+    </div>
+
+    <div class="header-acciones">
+      <button type="button" class="btn-secundario" (click)="volver()">Volver al Dashboard</button>
+
+      <button type="button" class="btn-primario" (click)="nuevoTipo()">+ Nuevo tipo</button>
+    </div>
+  </header>
+
+  <!-- MENSAJE ERROR -->
+
+  <div *ngIf="mensajeError" class="mensaje error">
+    {{ mensajeError }}
+  </div>
+
+  <!-- MENSAJE ÉXITO -->
+
+  <div *ngIf="mensajeExito" class="mensaje exito">
+    {{ mensajeExito }}
+  </div>
+
+  <!-- ====================================== -->
+  <!-- FORMULARIO -->
+  <!-- ====================================== -->
+
+  <section *ngIf="mostrarFormulario" class="card formulario-card">
+    <div class="card-header">
+      <h2>
+        {{ modoEdicion ? 'Editar tipo de incidencia' : 'Nuevo tipo de incidencia' }}
+      </h2>
+
+      <p>Complete la información del tipo de incidencia.</p>
+    </div>
+
+    <form (ngSubmit)="guardar()">
+      <div class="form-grid">
+        <!-- NOMBRE -->
+
+        <div class="campo">
+          <label> Nombre * </label>
+
+          <input
+            type="text"
+            name="nombre"
+            maxlength="100"
+            [(ngModel)]="formulario.nombre"
+            [disabled]="procesando"
+            placeholder="Ej. Corte de energía"
+          />
+        </div>
+
+        <!-- ESTADO -->
+
+        <div class="campo">
+          <label> Estado </label>
+
+          <select name="estado" [(ngModel)]="formulario.estado" [disabled]="procesando">
+            <option [ngValue]="true">Activo</option>
+
+            <option [ngValue]="false">Inactivo</option>
+          </select>
+        </div>
+
+        <!-- DESCRIPCIÓN -->
+
+        <div class="campo campo-completo">
+          <label> Descripción </label>
+
+          <textarea
+            name="descripcion"
+            rows="4"
+            maxlength="255"
+            [(ngModel)]="formulario.descripcion"
+            [disabled]="procesando"
+            placeholder="Descripción del tipo de incidencia"
+          >
+          </textarea>
+
+          <small> Máximo 255 caracteres. </small>
+        </div>
+      </div>
+
+      <div class="acciones-formulario">
+        <button
+          type="button"
+          class="btn-secundario"
+          [disabled]="procesando"
+          (click)="cancelarFormulario()"
+        >
+          Cancelar
+        </button>
+
+        <button type="submit" class="btn-primario" [disabled]="procesando">
+          {{ procesando ? 'Guardando...' : 'Guardar' }}
+        </button>
+      </div>
+    </form>
+  </section>
+
+  <!-- ====================================== -->
+  <!-- LISTADO -->
+  <!-- ====================================== -->
+
+  <section class="card">
+    <div class="card-header">
+      <h2>Tipos registrados</h2>
+
+      <p>
+        {{ tipos.length }}
+        tipo(s) de incidencia.
+      </p>
+    </div>
+
+    <div *ngIf="cargando" class="estado-carga">Cargando tipos de incidencia...</div>
+
+    <div *ngIf="!cargando" class="tabla-contenedor">
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+
+            <th>Nombre</th>
+
+            <th>Descripción</th>
+
+            <th>Estado</th>
+
+            <th>Acciones</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr *ngFor="let tipo of tipos">
+            <td>#{{ tipo.id }}</td>
+
+            <td>
+              <strong>
+                {{ tipo.nombre }}
+              </strong>
+            </td>
+
+            <td>
+              {{ tipo.descripcion || 'Sin descripción' }}
+            </td>
+
+            <td>
+              <span class="badge" [class.activo]="tipo.estado" [class.inactivo]="!tipo.estado">
+                {{ tipo.estado ? 'Activo' : 'Inactivo' }}
+              </span>
+            </td>
+
+            <td>
+              <div class="acciones-tabla">
+                <button type="button" class="btn-editar" (click)="editarTipo(tipo)">Editar</button>
+
+                <button
+                  *ngIf="tipo.estado"
+                  type="button"
+                  class="btn-desactivar"
+                  (click)="desactivar(tipo)"
+                >
+                  Desactivar
+                </button>
+              </div>
+            </td>
+          </tr>
+
+          <tr *ngIf="tipos.length === 0">
+            <td colspan="5" class="sin-datos">No existen tipos de incidencia.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+</div>

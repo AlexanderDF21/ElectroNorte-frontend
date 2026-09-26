@@ -1,0 +1,489 @@
+<app-navbar></app-navbar>
+
+<div class="dashboard">
+  <!-- ======================================
+       HEADER
+  ======================================= -->
+
+  <header class="header">
+    <div class="header-info">
+      <h1>Dashboard</h1>
+
+      <p>Bienvenido, {{ nombreUsuario }}</p>
+
+      <span class="rol-usuario" *ngIf="rol">
+        {{ rol }}
+      </span>
+    </div>
+
+    <div class="header-acciones">
+      <a routerLink="/incidencias" class="btn-incidencias"> Ver incidencias </a>
+    </div>
+  </header>
+
+  <!-- ======================================
+       CARGANDO
+  ======================================= -->
+
+  <div *ngIf="cargando" class="mensaje">Cargando dashboard...</div>
+
+  <!-- ======================================
+       ERROR
+  ======================================= -->
+
+  <div *ngIf="mensajeError" class="error">
+    {{ mensajeError }}
+  </div>
+
+  <!-- ======================================
+       DASHBOARD ADMIN
+  ======================================= -->
+
+  <ng-container *ngIf="esAdmin()">
+    <!-- RESUMEN -->
+
+    <div class="cards" *ngIf="resumen">
+      <div class="card">
+        <h3>Total</h3>
+        <span>{{ resumen.total }}</span>
+      </div>
+
+      <div class="card">
+        <h3>Registradas</h3>
+        <span>{{ resumen.registradas }}</span>
+      </div>
+
+      <div class="card">
+        <h3>En revisión</h3>
+        <span>{{ resumen.enRevision }}</span>
+      </div>
+
+      <div class="card">
+        <h3>Asignadas</h3>
+        <span>{{ resumen.asignadas }}</span>
+      </div>
+
+      <div class="card">
+        <h3>En atención</h3>
+        <span>{{ resumen.enAtencion }}</span>
+      </div>
+
+      <div class="card">
+        <h3>Resueltas</h3>
+        <span>{{ resumen.resueltas }}</span>
+      </div>
+
+      <div class="card">
+        <h3>Cerradas</h3>
+        <span>{{ resumen.cerradas }}</span>
+      </div>
+
+      <div class="card">
+        <h3>Canceladas</h3>
+        <span>{{ resumen.canceladas }}</span>
+      </div>
+    </div>
+
+    <!-- ======================================
+         INCIDENCIAS RECIENTES ADMIN
+    ======================================= -->
+
+    <section class="tabla-contenedor">
+      <div class="seccion-header">
+        <div>
+          <h2>Incidencias recientes</h2>
+
+          <p>Últimas incidencias registradas en el sistema.</p>
+        </div>
+
+        <a routerLink="/incidencias" class="btn-ver-todas"> Ver todas </a>
+      </div>
+
+      <div class="tabla-responsive" *ngIf="incidenciasRecientes.length > 0">
+        <table>
+          <thead>
+            <tr>
+              <th>Código</th>
+              <th>Título</th>
+              <th>Prioridad</th>
+              <th>Estado</th>
+              <th>Fecha</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr *ngFor="let incidencia of incidenciasRecientes">
+              <td>
+                {{ incidencia.codigo }}
+              </td>
+
+              <td>
+                {{ incidencia.titulo }}
+              </td>
+
+              <!-- PRIORIDAD -->
+
+              <td>
+                <span
+                  class="badge-prioridad"
+                  [ngClass]="'prioridad-' + incidencia.prioridad.toLowerCase()"
+                >
+                  {{ incidencia.prioridad }}
+                </span>
+              </td>
+
+              <!-- ESTADO -->
+
+              <td>
+                <span class="badge-estado" [ngClass]="'estado-' + incidencia.estado.toLowerCase()">
+                  {{
+                    incidencia.estado === 'EN_REVISION'
+                      ? 'EN REVISIÓN'
+                      : incidencia.estado === 'EN_ATENCION'
+                        ? 'EN ATENCIÓN'
+                        : incidencia.estado
+                  }}
+                </span>
+              </td>
+
+              <td>
+                {{ incidencia.fechaRegistro | date: 'dd/MM/yyyy HH:mm' }}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p *ngIf="!cargando && incidenciasRecientes.length === 0" class="sin-datos">
+        No existen incidencias recientes.
+      </p>
+    </section>
+
+    <!-- ======================================
+         REPORTES
+    ======================================= -->
+
+    <div class="reportes-grid">
+      <!-- PRIORIDAD -->
+
+      <section class="reporte-card">
+        <h2>Incidencias por prioridad</h2>
+
+        <div class="reporte-item" *ngFor="let item of reportePrioridad">
+          <div class="reporte-info">
+            <span>
+              {{ item.prioridad }}
+            </span>
+
+            <strong>
+              {{ item.cantidad }}
+            </strong>
+          </div>
+
+          <div class="barra-fondo">
+            <div class="barra" [style.width.%]="calcularPorcentajePrioridad(item.cantidad)"></div>
+          </div>
+        </div>
+
+        <p *ngIf="!cargando && reportePrioridad.length === 0" class="sin-datos">
+          No existen datos.
+        </p>
+      </section>
+
+      <!-- TIPO -->
+
+      <section class="reporte-card">
+        <h2>Incidencias por tipo</h2>
+
+        <div class="reporte-item" *ngFor="let item of reporteTipo">
+          <div class="reporte-info">
+            <span>
+              {{ item.tipoNombre }}
+            </span>
+
+            <strong>
+              {{ item.cantidad }}
+            </strong>
+          </div>
+
+          <div class="barra-fondo">
+            <div class="barra" [style.width.%]="calcularPorcentajeTipo(item.cantidad)"></div>
+          </div>
+        </div>
+
+        <p *ngIf="!cargando && reporteTipo.length === 0" class="sin-datos">No existen datos.</p>
+      </section>
+
+      <!-- TÉCNICO -->
+
+      <section class="reporte-card">
+        <h2>Incidencias por técnico</h2>
+
+        <div class="reporte-item" *ngFor="let item of reporteTecnico">
+          <div class="reporte-info">
+            <span>
+              {{ item.tecnicoNombre }}
+            </span>
+
+            <strong>
+              {{ item.cantidad }}
+            </strong>
+          </div>
+
+          <div class="barra-fondo">
+            <div class="barra" [style.width.%]="calcularPorcentajeTecnico(item.cantidad)"></div>
+          </div>
+        </div>
+
+        <p *ngIf="!cargando && reporteTecnico.length === 0" class="sin-datos">No existen datos.</p>
+      </section>
+    </div>
+  </ng-container>
+
+  <!-- ======================================
+       DASHBOARD TÉCNICO
+  ======================================= -->
+
+  <ng-container *ngIf="esTecnico()">
+    <div class="cards">
+      <div class="card">
+        <h3>Mis incidencias</h3>
+
+        <span>
+          {{ misIncidencias.length }}
+        </span>
+      </div>
+
+      <div class="card">
+        <h3>Asignadas</h3>
+
+        <span>
+          {{ contarEstado('ASIGNADA') }}
+        </span>
+      </div>
+
+      <div class="card">
+        <h3>En atención</h3>
+
+        <span>
+          {{ contarEstado('EN_ATENCION') }}
+        </span>
+      </div>
+
+      <div class="card">
+        <h3>Resueltas</h3>
+
+        <span>
+          {{ contarEstado('RESUELTA') }}
+        </span>
+      </div>
+    </div>
+
+    <section class="tabla-contenedor">
+      <div class="seccion-header">
+        <div>
+          <h2>Mis incidencias</h2>
+
+          <p>Incidencias asignadas a tu cuenta.</p>
+        </div>
+      </div>
+
+      <div class="tabla-responsive" *ngIf="misIncidencias.length > 0">
+        <table>
+          <thead>
+            <tr>
+              <th>Código</th>
+              <th>Título</th>
+              <th>Prioridad</th>
+              <th>Estado</th>
+              <th>Solicitante</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr *ngFor="let incidencia of misIncidencias">
+              <td>
+                {{ incidencia.codigo }}
+              </td>
+
+              <td>
+                {{ incidencia.titulo }}
+              </td>
+
+              <!-- PRIORIDAD -->
+
+              <td>
+                <span
+                  class="badge-prioridad"
+                  [ngClass]="'prioridad-' + incidencia.prioridad.toLowerCase()"
+                >
+                  {{ incidencia.prioridad }}
+                </span>
+              </td>
+
+              <!-- ESTADO -->
+
+              <td>
+                <span class="badge-estado" [ngClass]="'estado-' + incidencia.estado.toLowerCase()">
+                  {{
+                    incidencia.estado === 'EN_REVISION'
+                      ? 'EN REVISIÓN'
+                      : incidencia.estado === 'EN_ATENCION'
+                        ? 'EN ATENCIÓN'
+                        : incidencia.estado
+                  }}
+                </span>
+              </td>
+
+              <td>
+                {{ incidencia.usuarioNombre || 'Sin información' }}
+              </td>
+
+              <td>
+                <button type="button" class="btn-detalle" (click)="verIncidencia(incidencia.id)">
+                  Ver detalle
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p *ngIf="!cargando && misIncidencias.length === 0" class="sin-datos">
+        No tienes incidencias asignadas.
+      </p>
+    </section>
+  </ng-container>
+
+  <!-- ======================================
+       DASHBOARD USUARIO
+  ======================================= -->
+
+  <ng-container *ngIf="esUsuario()">
+    <div class="acciones-principales">
+      <div>
+        <h2>Mis incidencias</h2>
+
+        <p>Consulta el estado de tus solicitudes o registra una nueva incidencia.</p>
+      </div>
+
+      <button type="button" class="btn-nueva" (click)="nuevaIncidencia()">Nueva incidencia</button>
+    </div>
+
+    <div class="cards">
+      <div class="card">
+        <h3>Total</h3>
+
+        <span>
+          {{ misIncidencias.length }}
+        </span>
+      </div>
+
+      <div class="card">
+        <h3>Registradas</h3>
+
+        <span>
+          {{ contarEstado('REGISTRADA') }}
+        </span>
+      </div>
+
+      <div class="card">
+        <h3>En proceso</h3>
+
+        <span>
+          {{ contarEnProcesoUsuario() }}
+        </span>
+      </div>
+
+      <div class="card">
+        <h3>Resueltas</h3>
+
+        <span>
+          {{ contarEstado('RESUELTA') + contarEstado('CERRADA') }}
+        </span>
+      </div>
+    </div>
+
+    <section class="tabla-contenedor">
+      <div class="seccion-header">
+        <div>
+          <h2>Mis incidencias recientes</h2>
+
+          <p>Consulta el seguimiento de tus últimas solicitudes.</p>
+        </div>
+      </div>
+
+      <div class="tabla-responsive" *ngIf="misIncidencias.length > 0">
+        <table>
+          <thead>
+            <tr>
+              <th>Código</th>
+              <th>Título</th>
+              <th>Tipo</th>
+              <th>Prioridad</th>
+              <th>Estado</th>
+              <th>Fecha</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr *ngFor="let incidencia of misIncidencias">
+              <td>
+                {{ incidencia.codigo }}
+              </td>
+
+              <td>
+                {{ incidencia.titulo }}
+              </td>
+
+              <td>
+                {{ incidencia.tipoIncidenciaNombre || 'Sin información' }}
+              </td>
+
+              <!-- PRIORIDAD -->
+
+              <td>
+                <span
+                  class="badge-prioridad"
+                  [ngClass]="'prioridad-' + incidencia.prioridad.toLowerCase()"
+                >
+                  {{ incidencia.prioridad }}
+                </span>
+              </td>
+
+              <!-- ESTADO -->
+
+              <td>
+                <span class="badge-estado" [ngClass]="'estado-' + incidencia.estado.toLowerCase()">
+                  {{
+                    incidencia.estado === 'EN_REVISION'
+                      ? 'EN REVISIÓN'
+                      : incidencia.estado === 'EN_ATENCION'
+                        ? 'EN ATENCIÓN'
+                        : incidencia.estado
+                  }}
+                </span>
+              </td>
+
+              <td>
+                {{ incidencia.fechaRegistro | date: 'dd/MM/yyyy HH:mm' }}
+              </td>
+
+              <td>
+                <button type="button" class="btn-detalle" (click)="verIncidencia(incidencia.id)">
+                  Ver detalle
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p *ngIf="!cargando && misIncidencias.length === 0" class="sin-datos">
+        Todavía no has registrado incidencias.
+      </p>
+    </section>
+  </ng-container>
+</div>

@@ -1,0 +1,215 @@
+<app-navbar></app-navbar>
+<div class="pagina">
+  <header class="header">
+    <div>
+      <h1>Gestión de usuarios</h1>
+
+      <p>Administra los usuarios que tienen acceso a la Mesa de Ayuda.</p>
+    </div>
+
+    <div class="header-acciones">
+      <button class="btn-secundario" type="button" (click)="volver()">Volver al Dashboard</button>
+
+      <button class="btn-primario" type="button" (click)="nuevoUsuario()">+ Nuevo usuario</button>
+    </div>
+  </header>
+
+  <div *ngIf="mensajeError" class="mensaje error">
+    {{ mensajeError }}
+  </div>
+
+  <div *ngIf="mensajeExito" class="mensaje exito">
+    {{ mensajeExito }}
+  </div>
+
+  <!-- FORMULARIO -->
+
+  <section *ngIf="mostrarFormulario" class="card formulario-card">
+    <div class="card-header">
+      <div>
+        <h2>
+          {{ modoEdicion ? 'Editar usuario' : 'Nuevo usuario' }}
+        </h2>
+
+        <p>Complete los datos del usuario.</p>
+      </div>
+    </div>
+
+    <form (ngSubmit)="guardar()">
+      <div class="form-grid">
+        <div class="campo">
+          <label> Nombre * </label>
+
+          <input
+            type="text"
+            name="nombre"
+            maxlength="100"
+            [(ngModel)]="formulario.nombre"
+            [disabled]="procesando"
+          />
+        </div>
+
+        <div class="campo">
+          <label> Apellido * </label>
+
+          <input
+            type="text"
+            name="apellido"
+            maxlength="100"
+            [(ngModel)]="formulario.apellido"
+            [disabled]="procesando"
+          />
+        </div>
+
+        <div class="campo">
+          <label> Correo electrónico * </label>
+
+          <input type="email" name="email" [(ngModel)]="formulario.email" [disabled]="procesando" />
+        </div>
+
+        <div class="campo">
+          <label> Contraseña * </label>
+
+          <input
+            type="password"
+            name="password"
+            minlength="6"
+            [(ngModel)]="formulario.password"
+            [disabled]="procesando"
+            placeholder="Mínimo 6 caracteres"
+          />
+
+          <small *ngIf="modoEdicion">
+            Por seguridad, la contraseña actual no se muestra. Ingrese la contraseña que tendrá el
+            usuario.
+          </small>
+        </div>
+
+        <div class="campo">
+          <label> Rol * </label>
+
+          <select name="rol" [(ngModel)]="formulario.rol" [disabled]="procesando">
+            <option value="USUARIO">Usuario</option>
+
+            <option value="TECNICO">Técnico</option>
+
+            <option value="SUPERVISOR">Supervisor</option>
+
+            <option value="ADMIN">Administrador</option>
+          </select>
+        </div>
+
+        <div class="campo">
+          <label> Estado </label>
+
+          <select name="estado" [(ngModel)]="formulario.estado" [disabled]="procesando">
+            <option [ngValue]="true">Activo</option>
+
+            <option [ngValue]="false">Inactivo</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="acciones-formulario">
+        <button
+          type="button"
+          class="btn-secundario"
+          [disabled]="procesando"
+          (click)="cancelarFormulario()"
+        >
+          Cancelar
+        </button>
+
+        <button type="submit" class="btn-primario" [disabled]="procesando">
+          {{ procesando ? 'Guardando...' : 'Guardar usuario' }}
+        </button>
+      </div>
+    </form>
+  </section>
+
+  <!-- LISTADO -->
+
+  <section class="card">
+    <div class="card-header">
+      <div>
+        <h2>Usuarios registrados</h2>
+
+        <p>
+          {{ usuarios.length }}
+          usuario(s) encontrado(s).
+        </p>
+      </div>
+    </div>
+
+    <div *ngIf="cargando" class="estado-carga">Cargando usuarios...</div>
+
+    <div *ngIf="!cargando" class="tabla-contenedor">
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Usuario</th>
+            <th>Correo</th>
+            <th>Rol</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr *ngFor="let usuario of usuarios">
+            <td>#{{ usuario.id }}</td>
+
+            <td>
+              <strong>
+                {{ usuario.nombre }}
+                {{ usuario.apellido }}
+              </strong>
+            </td>
+
+            <td>
+              {{ usuario.email }}
+            </td>
+
+            <td>
+              <span class="badge rol">
+                {{ usuario.rol }}
+              </span>
+            </td>
+
+            <td>
+              <span
+                class="badge"
+                [class.activo]="usuario.estado"
+                [class.inactivo]="!usuario.estado"
+              >
+                {{ usuario.estado ? 'Activo' : 'Inactivo' }}
+              </span>
+            </td>
+
+            <td>
+              <div class="acciones-tabla">
+                <button type="button" class="btn-editar" (click)="editarUsuario(usuario)">
+                  Editar
+                </button>
+
+                <button
+                  *ngIf="usuario.estado"
+                  type="button"
+                  class="btn-desactivar"
+                  (click)="desactivarUsuario(usuario)"
+                >
+                  Desactivar
+                </button>
+              </div>
+            </td>
+          </tr>
+
+          <tr *ngIf="usuarios.length === 0">
+            <td colspan="6" class="sin-datos">No existen usuarios registrados.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+</div>
