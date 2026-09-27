@@ -12,7 +12,7 @@ import { AccionIncidencia } from '../../models/accion-incidencia';
   providedIn: 'root',
 })
 export class IncidenciaService {
-  private readonly apiUrl = 'http://localhost:8080/api/incidencias';
+  private readonly apiUrl = 'https://electronorte-backend-b3bdfmg4cydkh8dg.chilecentral-01.azurewebsites.net/api/incidencias';
 
   constructor(private http: HttpClient) {}
 

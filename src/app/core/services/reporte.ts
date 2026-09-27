@@ -12,7 +12,7 @@ import { ReporteTecnico } from '../../models/reporte-tecnico';
   providedIn: 'root',
 })
 export class Reporte {
-  private readonly apiUrl = 'http://localhost:8080/api/reportes';
+  private readonly apiUrl = 'https://electronorte-backend-b3bdfmg4cydkh8dg.chilecentral-01.azurewebsites.net/api/reportes';
 
   constructor(private http: HttpClient) {}
 

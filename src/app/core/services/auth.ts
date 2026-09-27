@@ -8,7 +8,7 @@ import { LoginResponse } from '../../models/login-response';
   providedIn: 'root',
 })
 export class Auth {
-  private readonly apiUrl = 'http://localhost:8080/api/auth';
+  private readonly apiUrl = 'https://electronorte-backend-b3bdfmg4cydkh8dg.chilecentral-01.azurewebsites.net/api/auth';
 
   constructor(private http: HttpClient) {}
 

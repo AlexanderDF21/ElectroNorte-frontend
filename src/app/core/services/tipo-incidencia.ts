@@ -8,7 +8,7 @@ import { TipoIncidencia } from '../../models/tipo-incidencia';
   providedIn: 'root',
 })
 export class TipoIncidenciaService {
-  private readonly apiUrl = 'http://localhost:8080/api/tipos-incidencia';
+  private readonly apiUrl = 'https://electronorte-backend-b3bdfmg4cydkh8dg.chilecentral-01.azurewebsites.net/api/tipos-incidencia';
 
   constructor(private http: HttpClient) {}
 

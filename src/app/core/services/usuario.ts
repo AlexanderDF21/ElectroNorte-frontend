@@ -17,7 +17,7 @@ export interface UsuarioRequest {
   providedIn: 'root',
 })
 export class UsuarioService {
-  private readonly apiUrl = 'http://localhost:8080/api/usuarios';
+  private readonly apiUrl = 'https://electronorte-backend-b3bdfmg4cydkh8dg.chilecentral-01.azurewebsites.net/api/usuarios';
 
   constructor(private http: HttpClient) {}
 
