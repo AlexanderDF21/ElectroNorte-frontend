@@ -42,3 +42,17 @@ __screenshots__/
 # System files
 .DS_Store
 Thumbs.db
+
+# Variables de entorno y credenciales
+.env
+.env.*
+!.env.example
+
+# Claves y certificados privados
+*.pem
+*.key
+*.p12
+*.pfx
+
+# Archivos de registro
+*.log
