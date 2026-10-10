@@ -1,59 +1,134 @@
-# MesaAyudaFrontend
+# ElectroNorte — Frontend
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 22.1.8.
+## Descripción del proyecto
 
-## Development server
+Frontend del sistema **Mesa de Ayuda para la Gestión de Incidencias del Servicio de Energía Eléctrica**, desarrollado para ElectroNorte S.A.
 
-To start a local development server, run:
+La aplicación permite gestionar incidencias del servicio eléctrico mediante una interfaz web, con funcionalidades según los roles de usuario, técnico y administrador.
 
-```bash
-ng serve
-```
+## Tecnologías utilizadas
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+- Angular 22
+- TypeScript
+- HTML y CSS
+- API REST
+- Azure Static Web Apps
 
-## Code scaffolding
+## Requisitos previos
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+Para ejecutar el frontend localmente se necesita:
 
-```bash
-ng generate component component-name
-```
+- Node.js y npm compatibles con Angular 22.
+- Visual Studio Code u otro editor de código.
+- Acceso al backend de ElectroNorte, local o desplegado.
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+## Instalación y ejecución
 
-```bash
-ng generate --help
-```
-
-## Building
-
-To build the project run:
+**1. Clonar el repositorio**
 
 ```bash
-ng build
+git clone https://github.com/AlexanderDF21/ElectroNorte-frontend.git
 ```
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
+**2. Ingresar al proyecto**
 
 ```bash
-ng test
+cd ElectroNorte-frontend
 ```
 
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
+**3. Instalar las dependencias**
 
 ```bash
-ng e2e
+npm install
 ```
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+**4. Configurar la conexión con el backend**
 
-## Additional Resources
+Verificar que la URL base de la API REST utilizada por los servicios Angular apunte al backend correspondiente.
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+Backend desplegado en Azure:
+
+```text
+https://electronorte-backend-b3bdfmg4cydkh8dg.chilecentral-01.azurewebsites.net
+```
+
+La dirección de la API debe configurarse en el archivo correspondiente del proyecto antes de ejecutar la aplicación.
+
+**5. Iniciar el servidor de desarrollo**
+
+```bash
+npx ng serve
+```
+
+**6. Abrir la aplicación**
+
+Ingresar desde el navegador a:
+
+http://localhost:4200/
+
+## Compilación del proyecto
+
+Para generar la versión de producción:
+
+```bash
+npx ng build
+```
+
+Los archivos compilados se almacenarán en el directorio `dist/`.
+
+## Estructura principal
+
+```text
+src/
+└── app/
+    ├── components/
+    ├── core/
+    │   ├── guards/
+    │   ├── interceptors/
+    │   └── services/
+    ├── models/
+    ├── pages/
+    └── app.routes.ts
+```
+
+- **components:** componentes reutilizables de la interfaz.
+- **guards:** protección de rutas según autenticación y autorización.
+- **interceptors:** procesamiento de solicitudes HTTP.
+- **services:** comunicación con la API REST.
+- **models:** estructuras de datos utilizadas en Angular.
+- **pages:** pantallas del sistema.
+- **app.routes.ts:** configuración de rutas.
+
+## Funcionalidades principales
+
+- Inicio de sesión y autenticación.
+- Registro de incidencias eléctricas.
+- Consulta y seguimiento de incidencias.
+- Gestión de incidencias según los roles del sistema.
+- Comunicación con el backend mediante API REST.
+
+## Repositorio del backend
+
+El backend está desarrollado con Java 17 y Spring Boot.
+
+https://github.com/AlexanderDF21/ElectroNorte-backend
+
+## Aplicación desplegada en Azure
+
+Frontend:
+
+https://lemon-cliff-0e380020f.6.azurestaticapps.net
+
+Backend:
+
+https://electronorte-backend-b3bdfmg4cydkh8dg.chilecentral-01.azurewebsites.net
+
+## Seguridad
+
+El archivo `.gitignore` excluye dependencias, archivos compilados y archivos locales que puedan contener credenciales.
+
+No se deben publicar contraseñas, tokens ni claves privadas en el repositorio.
+
+## Proyecto académico
+
+Proyecto desarrollado para el curso de Soluciones Web y Aplicaciones Distribuidas.
